@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Phoenix Sequence Execution Queue — PSEQ</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#050505;
+      --bg-soft:#0b0b0c;
+      --panel:#0d0f13;
+      --panel-2:#11141a;
+      --panel-3:#151922;
+      --text:#f3f4f6;
+      --muted:#a8afb8;
+      --muted-2:#7f8791;
+      --gold:#c9a227;
+      --line:#232831;
+      --line-2:#1b1f26;
+      --blue-glow:rgba(49,95,188,0.16);
+
+      --green-soft: rgba(57,140,89,0.16);
+      --green-border: rgba(57,140,89,0.30);
+      --amber-soft: rgba(184,134,11,0.16);
+      --amber-border: rgba(184,134,11,0.30);
+      --red-soft: rgba(170,72,72,0.16);
+      --red-border: rgba(170,72,72,0.30);
+      --blue-soft: rgba(68,115,255,0.16);
+      --blue-border: rgba(68,115,255,0.24);
+
+      --shadow:0 20px 60px rgba(0,0,0,0.35);
+      --radius:16px;
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+    html, body{
+      width:100%;
+      min-height:100%;
+      background:var(--bg);
+      color:var(--text);
+      font-family:"Inter", Arial, sans-serif;
+    }
+
+    body{
+      background:
+        radial-gradient(circle at 50% 18%, rgba(201,162,39,0.08) 0%, rgba(201,162,39,0.02) 18%, rgba(0,0,0,0) 44%),
+        radial-gradient(circle at 50% 58%, var(--blue-glow) 0%, rgba(49,95,188,0.05) 24%, rgba(0,0,0,0) 58%),
+        linear-gradient(180deg, #090909 0%, #060606 100%);
+    }
+
+    .page{
+      position:relative;
+      min-height:100vh;
+      overflow:hidden;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.015) 0, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 100%),
+        linear-gradient(180deg, rgba(255,255,255,0.015) 0, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 100%);
+      background-size:120px 120px;
+    }
+
+    .page::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0) 15%, rgba(255,255,255,0) 85%, rgba(255,255,255,0.02) 100%);
+      pointer-events:none;
+    }
+
+    .seal{
+      position:absolute;
+      top:30px;
+      left:36px;
+      width:112px;
+      opacity:0.96;
+      filter:drop-shadow(0 0 14px rgba(201,162,39,0.08));
+      z-index:4;
+    }
+
+    .system-label{
+      position:absolute;
+      top:42px;
+      left:50%;
+      transform:translateX(-50%);
+      text-align:center;
+      pointer-events:none;
+      z-index:4;
+    }
+
+    .system-kicker{
+      font-family:"Cinzel", serif;
+      font-size:13px;
+      letter-spacing:0.26em;
+      text-transform:uppercase;
+      color:#cfd4da;
+      opacity:0.82;
+    }
+
+    .shell{
+      position:relative;
+      z-index:2;
+      width:min(1440px, 94vw);
+      margin:0 auto;
+      padding:120px 0 42px;
+    }
+
+    .hero{
+      text-align:center;
+      margin-bottom:30px;
+    }
+
+    .headline{
+      font-family:"Cinzel", serif;
+      font-size:clamp(28px, 2.7vw, 46px);
+      line-height:1.06;
+      letter-spacing:0.04em;
+      text-transform:uppercase;
+      font-weight:600;
+      max-width:1160px;
+      margin:0 auto 18px;
+      background:linear-gradient(
+        180deg,
+        #ffffff 0%,
+        #eef2f6 28%,
+        #cfd6dd 48%,
+        #f5f7fa 68%,
+        #bfc6cd 100%
+      );
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      text-shadow:
+        0 1px 0 rgba(255,255,255,0.18),
+        0 10px 20px rgba(0,0,0,0.52),
+        0 0 28px rgba(70,120,200,0.08);
+    }
+
+    .subline{
+      font-size:clamp(16px,1.08vw,19px);
+      line-height:1.6;
+      color:var(--muted);
+      max-width:880px;
+      margin:0 auto;
+    }
+
+    .workspace{
+      display:grid;
+      grid-template-columns:minmax(0, 1fr) 340px;
+      gap:28px;
+      align-items:start;
+    }
+
+    .main-panel{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border:1px solid var(--line);
+      padding:28px;
+      min-height:680px;
+      backdrop-filter:blur(4px);
+      box-shadow:var(--shadow);
+    }
+
+    .rail{
+      background:var(--bg-soft);
+      border:1px solid var(--line);
+      min-height:680px;
+      padding:22px 20px;
+      position:relative;
+      box-shadow:var(--shadow);
+    }
+
+    .rail::before{
+      content:"";
+      position:absolute;
+      top:0;
+      left:0;
+      width:1px;
+      height:100%;
+      background:rgba(201,162,39,0.12);
+    }
+
+    .panel-kicker, .rail-kicker, .section-label{
+      font-size:11px;
+      letter-spacing:0.18em;
+      text-transform:uppercase;
+      color:var(--muted-2);
+      margin-bottom:12px;
+    }
+
+    .section{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,0.02);
+      padding:22px;
+      margin-bottom:18px;
+    }
+
+    .section:last-child{
+      margin-bottom:0;
+    }
+
+    .section-title{
+      font-family:"Cinzel", serif;
+      font-size:22px;
+      letter-spacing:0.04em;
+      text-transform:uppercase;
+      color:var(--text);
+      margin-bottom:10px;
+    }
+
+    .section-copy{
+      font-size:15px;
+      line-height:1.7;
+      color:var(--muted);
+    }
+
+    .top-grid{
+      display:grid;
+      grid-template-columns:280px 1fr;
+      gap:18px;
+      margin-bottom:18px;
+    }
+
+    .score-card{
+      border:1px solid rgba(201,162,39,0.26);
+      background:linear-gradient(180deg, rgba(201,162,39,0.10), rgba(201,162,39,0.03));
+      padding:24px;
+      min-height:220px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+    }
+
+    .score-number{
+      font-family:"Cinzel", serif;
+      font-size:56px;
+      line-height:0.95;
+      letter-spacing:-0.04em;
+      margin-bottom:10px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      width:fit-content;
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:11px;
+      letter-spacing:0.12em;
+      text-transform:uppercase;
+      margin-bottom:12px;
+      border:1px solid rgba(255,255,255,0.08);
+    }
+
+    .state-green{
+      background: var(--green-soft);
+      border-color: var(--green-border);
+      color: #d4ecd9;
+    }
+
+    .state-amber{
+      background: var(--amber-soft);
+      border-color: var(--amber-border);
+      color: #ead9a9;
+    }
+
+    .state-red{
+      background: var(--red-soft);
+      border-color: var(--red-border);
+      color: #efc0c0;
+    }
+
+    .state-blue{
+      background: var(--blue-soft);
+      border-color: var(--blue-border);
+      color: #cad7ff;
+    }
+
+    .summary-card{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,0.018);
+      padding:22px;
+    }
+
+    .grid-2, .grid-3{
+      display:grid;
+      gap:14px;
+    }
+
+    .grid-2{ grid-template-columns:repeat(2,1fr); }
+    .grid-3{ grid-template-columns:repeat(3,1fr); }
+
+    .mini-card, .meta-box, .step-card, .token-box, .note-box{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,0.018);
+      padding:18px;
+    }
+
+    .mini-card h3, .step-card h3, .meta-box h3, .token-box h3, .note-box h3{
+      font-family:"Cinzel", serif;
+      font-size:15px;
+      letter-spacing:0.05em;
+      text-transform:uppercase;
+      color:var(--text);
+      margin-bottom:10px;
+      line-height:1.35;
+    }
+
+    .mini-card p, .step-card p, .meta-box p, .token-box p, .note-box p{
+      color:var(--muted);
+      line-height:1.65;
+      font-size:14px;
+    }
+
+    .progress-track{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:12px;
+      margin-top:14px;
+    }
+
+    .week-chip{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,0.018);
+      padding:14px 12px;
+      text-align:center;
+    }
+
+    .week-chip strong{
+      display:block;
+      font-family:"Cinzel", serif;
+      font-size:14px;
+      letter-spacing:0.06em;
+      text-transform:uppercase;
+      margin-bottom:8px;
+      color:var(--text);
+    }
+
+    .week-chip span{
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .meta-row{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      padding:10px 0;
+      border-bottom:1px solid var(--line);
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .meta-row:last-child{
+      border-bottom:none;
+      padding-bottom:0;
+    }
+
+    .meta-row:first-child{
+      padding-top:0;
+    }
+
+    .meta-key{
+      color:var(--muted-2);
+      text-transform:uppercase;
+      letter-spacing:0.08em;
+      font-size:11px;
+      white-space:nowrap;
+    }
+
+    .step-card{
+      margin-bottom:14px;
+    }
+
+    .step-card:last-child{
+      margin-bottom:0;
+    }
+
+    .step-head{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:flex-start;
+      margin-bottom:12px;
+    }
+
+    .step-title{
+      font-family:"Cinzel", serif;
+      font-size:16px;
+      letter-spacing:0.04em;
+      text-transform:uppercase;
+      color:var(--text);
+      line-height:1.35;
+    }
+
+    .artifact-form{
+      margin-top:16px;
+      display:grid;
+      gap:12px;
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .field label{
+      font-size:11px;
+      letter-spacing:0.14em;
+      text-transform:uppercase;
+      color:var(--muted-2);
+      font-weight:600;
+    }
+
+    input, select, textarea{
+      width:100%;
+      appearance:none;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,0.03);
+      color:var(--text);
+      border-radius:12px;
+      padding:14px 14px;
+      font:inherit;
+      outline:none;
+      transition:border-color .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+
+    textarea{
+      min-height:120px;
+      resize:vertical;
+    }
+
+    input:focus, select:focus, textarea:focus{
+      border-color:rgba(201,162,39,0.48);
+      box-shadow:0 0 0 4px rgba(201,162,39,0.08);
+      background:rgba(255,255,255,0.045);
+    }
+
+    select{
+      cursor:pointer;
+      background-image:
+        linear-gradient(45deg, transparent 50%, #808894 50%),
+        linear-gradient(135deg, #808894 50%, transparent 50%);
+      background-position:
+        calc(100% - 22px) calc(50% - 3px),
+        calc(100% - 16px) calc(50% - 3px);
+      background-size:6px 6px, 6px 6px;
+      background-repeat:no-repeat;
+      padding-right:40px;
+    }
+
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top:4px;
+    }
+
+    .cta, .ghost-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:50px;
+      padding:14px 20px;
+      border-radius:12px;
+      text-decoration:none;
+      text-transform:uppercase;
+      font-family:"Cinzel", serif;
+      font-size:13px;
+      letter-spacing:0.10em;
+      cursor:pointer;
+      transition:background-color .18s ease, color .18s ease, border-color .18s ease, transform .18s ease;
+    }
+
+    .cta{
+      border:1px solid var(--gold);
+      background:rgba(255,255,255,0.01);
+      color:var(--text);
+    }
+
+    .cta:hover{
+      background:var(--gold);
+      color:#111;
+      transform:translateY(-1px);
+    }
+
+    .ghost-btn{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,0.02);
+      color:var(--text);
+    }
+
+    .ghost-btn:hover{
+      background:#11151c;
+      transform:translateY(-1px);
+    }
+
+    .ack-box{
+      border:1px solid rgba(201,162,39,0.20);
+      background:rgba(201,162,39,0.06);
+      padding:14px 16px;
+      border-radius:12px;
+      margin-top:14px;
+    }
+
+    .ack-row{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+    }
+
+    .ack-row input[type="checkbox"]{
+      width:18px;
+      height:18px;
+      margin-top:2px;
+      accent-color: var(--gold);
+      box-shadow:none;
+    }
+
+    .ack-row label{
+      font-size:14px;
+      color:var(--muted);
+      line-height:1.6;
+    }
+
+    .review-box{
+      border-left:2px solid var(--gold);
+      padding-left:14px;
+      margin-top:14px;
+    }
+
+    .review-title{
+      font-size:11px;
+      letter-spacing:0.16em;
+      text-transform:uppercase;
+      color:var(--gold);
+      margin-bottom:8px;
+    }
+
+    .token-output{
+      margin-top:16px;
+      padding:16px;
+      border:1px solid rgba(57,140,89,0.28);
+      background:rgba(57,140,89,0.08);
+      border-radius:12px;
+      display:none;
+    }
+
+    .token-output.show{
+      display:block;
+    }
+
+    .token-code{
+      font-family:"Cinzel", serif;
+      font-size:18px;
+      letter-spacing:0.08em;
+      color:#d4ecd9;
+      margin-bottom:8px;
+      word-break:break-word;
+    }
+
+    .token-meta{
+      font-size:13px;
+      color:#b8cfc0;
+      line-height:1.6;
+    }
+
+    .review-status{
+      margin-top:12px;
+      font-size:13px;
+      color:var(--muted);
+      line-height:1.6;
+    }
+
+    .locked-banner{
+      border:1px solid rgba(170,72,72,0.30);
+      background:rgba(170,72,72,0.10);
+      padding:16px;
+      margin-bottom:18px;
+      display:none;
+    }
+
+    .locked-banner.show{
+      display:block;
+    }
+
+    .locked-banner strong{
+      display:block;
+      font-family:"Cinzel", serif;
+      font-size:15px;
+      letter-spacing:0.04em;
+      text-transform:uppercase;
+      margin-bottom:8px;
+      color:#efc0c0;
+    }
+
+    .locked-banner p{
+      color:#e3b6b6;
+      line-height:1.6;
+      font-size:14px;
+    }
+
+    .policy-box{
+      border:1px solid var(--line);
+      background:rgba(255,255,255,0.018);
+      padding:16px;
+      margin-top:16px;
+    }
+
+    .policy-box p{
+      color:var(--muted);
+      line-height:1.7;
+      font-size:13px;
+      margin-bottom:10px;
+    }
+
+    .policy-box p:last-child{
+      margin-bottom:0;
+    }
+
+    .rail-title{
+      font-family:"Cinzel", serif;
+      font-size:17px;
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+      color:var(--text);
+      margin-bottom:18px;
+    }
+
+    .rail-copy{
+      font-size:15px;
+      line-height:1.68;
+      color:#e8e8ea;
+    }
+
+    .state-line{
+      font-size:12px;
+      line-height:1.6;
+      color:var(--muted);
+      border-top:1px solid var(--line);
+      padding-top:16px;
+      margin-top:14px;
+    }
+
+    .stack-bar{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:16px;
+      padding:14px 24px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,0.02);
+      width:min(980px,94%);
+      margin:26px auto 0;
+    }
+
+    .stack-label{
+      font-size:11px;
+      letter-spacing:0.18em;
+      text-transform:uppercase;
+      color:var(--muted-2);
+      white-space:nowrap;
+    }
+
+    .stack-flow{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:wrap;
+      font-family:"Cinzel", serif;
+      font-size:14px;
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+      color:#8d949d;
+    }
+
+    .stack-flow .active{
+      color:var(--gold);
+    }
+
+    .stack-flow .arrow{
+      color:#525964;
+      font-family:"Inter", Arial, sans-serif;
+      font-size:15px;
+      letter-spacing:normal;
+    }
+
+    .footer{
+      text-align:center;
+      font-size:11px;
+      color:#7b828c;
+      letter-spacing:0.06em;
+      width:100%;
+      padding:22px 0 8px;
+    }
+
+    .footer a{
+      color:#9ba3ad;
+      text-decoration:none;
+    }
+
+    .footer a:hover{
+      color:#cfd4da;
+    }
+
+    @media (max-width: 1080px){
+      .workspace{
+        grid-template-columns:1fr;
+      }
+      .rail,
+      .main-panel{
+        min-height:auto;
+      }
+      .rail{
+        order:-1;
+      }
+    }
+
+    @media (max-width: 900px){
+      .top-grid,
+      .grid-2,
+      .grid-3,
+      .progress-track{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media (max-width: 780px){
+      .seal{
+        top:22px;
+        left:20px;
+        width:84px;
+      }
+      .system-label{
+        top:26px;
+        width:100%;
+        padding:0 90px 0 104px;
+      }
+      .system-kicker{
+        font-size:10px;
+        letter-spacing:0.18em;
+      }
+      .shell{
+        padding:96px 0 28px;
+      }
+      .headline{
+        font-size:clamp(24px, 6.5vw, 34px);
+      }
+      .main-panel{
+        padding:20px 16px;
+      }
+      .rail{
+        padding:18px 16px;
+      }
+      .stack-bar{
+        flex-direction:column;
+        gap:8px;
+        padding:14px 16px;
+      }
+      .stack-label{
+        font-size:10px;
+      }
+      .stack-flow{
+        font-size:12px;
+        gap:8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <img src="logo.png" alt="Phoenix OS Seal" class="seal" />
+
+    <div class="system-label">
+      <div class="system-kicker">Phoenix Business System</div>
+    </div>
+
+    <div class="shell">
+      <section class="hero">
+        <h1 class="headline">Phoenix Sequence Execution Queue</h1>
+        <p class="subline">
+          Governed execution layer for converting diagnosed business conditions into structured, forward-moving action. Tokens, not attempts, determine completion.
+        </p>
+      </section>
+
+      <section class="workspace">
+        <div class="main-panel">
+          <div class="panel-kicker">PSEQ Token Engine</div>
+
+          <div class="locked-banner" id="lockedBanner">
+            <strong>Progression Restricted</strong>
+            <p>
+              New execution outputs remain restricted until required token thresholds are satisfied for the current billing cycle.
+            </p>
+          </div>
+
+          <section class="section">
+            <div class="section-label">Execution Position</div>
+            <div class="top-grid">
+              <div class="score-card">
+                <div class="score-number" id="month-token-count">1 / 4</div>
+                <div class="pill state-amber" id="cycle-status-pill">Partial Cycle</div>
+                <p class="section-copy" id="cycle-status-copy">
+                  Four valid tokens are required to satisfy the current monthly cycle.
+                </p>
+              </div>
+
+              <div class="summary-card">
+                <h2 class="section-title">Sequence Command</h2>
+                <p class="section-copy" id="sequence-command-copy">
+                  Your current cycle remains active. Continue execution submission for the assigned weekly sequence. Tokens are issued only after artifact submission, system review, and client acknowledgment.
+                </p>
+
+                <div class="progress-track">
+                  <div class="week-chip">
+                    <strong>Week 1</strong>
+                    <span id="week1-status">Complete</span>
+                  </div>
+                  <div class="week-chip">
+                    <strong>Week 2</strong>
+                    <span id="week2-status">Active</span>
+                  </div>
+                  <div class="week-chip">
+                    <strong>Week 3</strong>
+                    <span id="week3-status">Locked</span>
+                  </div>
+                  <div class="week-chip">
+                    <strong>Week 4</strong>
+                    <span id="week4-status">Locked</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-label">Client Sequence Profile</div>
+            <div class="grid-3">
+              <div class="mini-card">
+                <h3>Primary Directive</h3>
+                <p id="directive-text">Stabilize offer clarity and publish a cleaner primary market-facing signal.</p>
+              </div>
+              <div class="mini-card">
+                <h3>Current Constraint</h3>
+                <p id="constraint-text">Clarity constraint is still reducing clean market response.</p>
+              </div>
+              <div class="mini-card">
+                <h3>Current Sequence Window</h3>
+                <p id="window-text">Week 2 execution window remains open until token issuance is completed.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-label">Execution Steps</div>
+
+            <div class="step-card" data-step="1">
+              <div class="step-head">
+                <div>
+                  <div class="step-title">Step 1 — Publish Primary Offer</div>
+                  <p>This step requires submission of a client-provided execution artifact. System review may recommend revision, but client acknowledgment controls final completion.</p>
+                </div>
+                <span class="pill state-blue">Artifact Type: Screenshot</span>
+              </div>
+
+              <div class="review-box">
+                <div class="review-title">System Review Position</div>
+                <p>
+                  Screenshots are accepted as client-presented execution evidence. The token, not the artifact itself, serves as the final execution record.
+                </p>
+              </div>
+
+              <div class="artifact-form">
+                <div class="field">
+                  <label for="artifact_name_1">Screenshot Reference</label>
+                  <input id="artifact_name_1" type="text" placeholder="Enter screenshot file name or reference" />
+                </div>
+
+                <div class="field">
+                  <label for="artifact_note_1">Execution Description</label>
+                  <textarea id="artifact_note_1" placeholder="Describe what was executed and what the screenshot represents."></textarea>
+                </div>
+
+                <div class="field">
+                  <label for="artifact_review_1">System Recommendation</label>
+                  <select id="artifact_review_1">
+                    <option value="agree">Agree — submission is acceptable as presented</option>
+                    <option value="revise">Recommend revision before ideal progression</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="review-status" id="review_status_1">
+                System review has not yet been recorded for this step.
+              </div>
+
+              <div class="ack-box">
+                <div class="ack-row">
+                  <input id="ack_1" type="checkbox" />
+                  <label for="ack_1">
+                    I acknowledge that this artifact is my submitted execution work for this session. I understand that once a token is issued and accepted, it serves as proof that I affirm completion of this execution step, regardless of any recommended revisions.
+                  </label>
+                </div>
+              </div>
+
+              <div class="actions">
+                <button class="ghost-btn" type="button" onclick="reviewStep(1)">Run Review</button>
+                <button class="cta" type="button" onclick="issueToken(1)">Issue Token</button>
+              </div>
+
+              <div class="token-output" id="token_output_1">
+                <div class="token-code" id="token_code_1">—</div>
+                <div class="token-meta" id="token_meta_1">—</div>
+              </div>
+            </div>
+
+            <div class="step-card" data-step="2">
+              <div class="step-head">
+                <div>
+                  <div class="step-title">Step 2 — Submit Market-Facing Revision</div>
+                  <p>Use this step to present the refined market-facing execution version for the current cycle.</p>
+                </div>
+                <span class="pill state-blue">Artifact Type: Screenshot</span>
+              </div>
+
+              <div class="review-box">
+                <div class="review-title">System Review Position</div>
+                <p>
+                  System recommendations are advisory only. If the client insists on submission as completed work, that submission becomes the execution record once tokened.
+                </p>
+              </div>
+
+              <div class="artifact-form">
+                <div class="field">
+                  <label for="artifact_name_2">Screenshot Reference</label>
+                  <input id="artifact_name_2" type="text" placeholder="Enter screenshot file name or reference" />
+                </div>
+
+                <div class="field">
+                  <label for="artifact_note_2">Execution Description</label>
+                  <textarea id="artifact_note_2" placeholder="Describe what this screenshot shows and what was executed."></textarea>
+                </div>
+
+                <div class="field">
+                  <label for="artifact_review_2">System Recommendation</label>
+                  <select id="artifact_review_2">
+                    <option value="agree">Agree — submission is acceptable as presented</option>
+                    <option value="revise">Recommend revision before ideal progression</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="review-status" id="review_status_2">
+                System review has not yet been recorded for this step.
+              </div>
+
+              <div class="ack-box">
+                <div class="ack-row">
+                  <input id="ack_2" type="checkbox" />
+                  <label for="ack_2">
+                    I acknowledge that this artifact is my submitted execution work for this session. I understand that once a token is issued and accepted, it serves as proof that I affirm completion of this execution step, regardless of any recommended revisions.
+                  </label>
+                </div>
+              </div>
+
+              <div class="actions">
+                <button class="ghost-btn" type="button" onclick="reviewStep(2)">Run Review</button>
+                <button class="cta" type="button" onclick="issueToken(2)">Issue Token</button>
+              </div>
+
+              <div class="token-output" id="token_output_2">
+                <div class="token-code" id="token_code_2">—</div>
+                <div class="token-meta" id="token_meta_2">—</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="section">
+            <div class="section-label">Token Ledger Summary</div>
+            <div class="grid-2">
+              <div class="meta-box">
+                <h3>Cycle Record</h3>
+                <div class="meta-row">
+                  <span class="meta-key">Subscription State</span>
+                  <span id="subscription-state">Active</span>
+                </div>
+                <div class="meta-row">
+                  <span class="meta-key">Current Billing Cycle</span>
+                  <span id="billing-cycle">March 2026</span>
+                </div>
+                <div class="meta-row">
+                  <span class="meta-key">Valid Tokens Logged</span>
+                  <span id="valid-token-count">1</span>
+                </div>
+                <div class="meta-row">
+                  <span class="meta-key">Required Tokens</span>
+                  <span>4</span>
+                </div>
+                <div class="meta-row">
+                  <span class="meta-key">New Outputs</span>
+                  <span id="new-output-status">Restricted Until Completion</span>
+                </div>
+              </div>
+
+              <div class="token-box">
+                <h3>Authority Note</h3>
+                <p>
+                  Artifacts serve as client-presented submissions. The token is the sole authoritative execution record. Once issued and acknowledged, the record is treated as final for that session.
+                </p>
+              </div>
+            </div>
+
+            <div class="policy-box">
+              <p>
+                The Phoenix Sequence Engine (PSEQ) issues execution tokens upon submission of required artifacts and client acknowledgment of completion. A token represents confirmation that the client has submitted evidence and acknowledged completion of a defined execution step under system criteria.
+              </p>
+              <p>
+                Tokens do not verify, certify, or guarantee the quality, effectiveness, or real-world success of any execution. The system may suggest revision, but if a client insists on submission as completed work, that submission becomes the recorded execution once tokened and acknowledged.
+              </p>
+              <p>
+                Subscription access remains active regardless of execution completion. However, new execution outputs are not released until required token thresholds are satisfied for the billing cycle.
+              </p>
+            </div>
+          </section>
+        </div>
+
+        <aside class="rail">
+          <div class="rail-kicker">NACE</div>
+          <div class="rail-title">Institutional Interface</div>
+
+          <div class="nace-block">
+            <div class="rail-copy" id="naceGuidance">
+              Welcome to the Phoenix Sequence Execution Queue. This layer governs execution acknowledgment, token issuance, and cycle progression. Submit artifacts, review the system position, then affirm completion to issue tokens.
+            </div>
+          </div>
+
+          <div class="note-box">
+            <h3>Current Review Logic</h3>
+            <p>
+              The system may agree with what is presented or recommend revision. Recommendations remain advisory. Client acknowledgment controls final completion.
+            </p>
+          </div>
+
+          <div class="note-box" style="margin-top:14px;">
+            <h3>Monthly Requirement</h3>
+            <p>
+              Four valid tokens are required each billing cycle. Billing continues even if the token threshold is not met. No new execution outputs are produced until threshold is satisfied.
+            </p>
+          </div>
+
+          <div class="state-line" id="stateLine">
+            Tokens, not attempts, determine cycle satisfaction. Maintain clean records. Progression is condition-based and record-based.
+          </div>
+        </aside>
+      </section>
+
+      <div class="stack-bar">
+        <div class="stack-label">System Flow</div>
+        <div class="stack-flow">
+          <span>PQS</span>
+          <span class="arrow">→</span>
+          <span>PBRS</span>
+          <span class="arrow">→</span>
+          <span>PBB</span>
+          <span class="arrow">→</span>
+          <span class="active">PSEQ</span>
+          <span class="arrow">→</span>
+          <span>PNC</span>
+        </div>
+      </div>
+
+      <footer class="footer">
+        © Rising Phoenix Enterprises &nbsp; | &nbsp;
+        <a href="policies/terms.html">Terms</a>
+        &nbsp; | &nbsp;
+        <a href="policies/privacy.html">Privacy</a>
+      </footer>
+    </div>
+  </main>
+
+  <script>
+    const pseqState = {
+      monthRequiredTokens: 4,
+      currentValidTokens: 1,
+      tokensIssuedThisSession: [],
+      reviews: {},
+      monthlySatisfied: false
+    };
+
+    function tokenPrefix() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, "0");
+      const d = String(now.getDate()).padStart(2, "0");
+      return `${y}${m}${d}`;
+    }
+
+    function randomSegment(len = 6) {
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      let out = "";
+      for (let i = 0; i < len; i++) {
+        out += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return out;
+    }
+
+    function buildToken(step) {
+      return `PSEQ-W2-S${step}-${tokenPrefix()}-${randomSegment(6)}`;
+    }
+
+    function reviewStep(step) {
+      const artifactName = document.getElementById(`artifact_name_${step}`).value.trim();
+      const artifactNote = document.getElementById(`artifact_note_${step}`).value.trim();
+      const reviewChoice = document.getElementById(`artifact_review_${step}`).value;
+      const reviewStatus = document.getElementById(`review_status_${step}`);
+      const naceGuidance = document.getElementById("naceGuidance");
+
+      if (!artifactName || !artifactNote) {
+        reviewStatus.textContent = "Review cannot be recorded until screenshot reference and execution description are both submitted.";
+        naceGuidance.textContent = "The system requires a presented artifact reference and execution description before review status can be recorded.";
+        return;
+      }
+
+      let reviewText = "";
+      if (reviewChoice === "agree") {
+        reviewText = "System review position: Agree. Submission is acceptable as presented for this execution step.";
+      } else {
+        reviewText = "System review position: Revision recommended. Submission may proceed, but the client retains final override authority.";
+      }
+
+      pseqState.reviews[step] = reviewChoice;
+      reviewStatus.textContent = reviewText;
+      naceGuidance.textContent = reviewText + " Token issuance remains available only after client acknowledgment.";
+    }
+
+    function issueToken(step) {
+      const artifactName = document.getElementById(`artifact_name_${step}`).value.trim();
+      const artifactNote = document.getElementById(`artifact_note_${step}`).value.trim();
+      const ack = document.getElementById(`ack_${step}`).checked;
+      const reviewChoice = document.getElementById(`artifact_review_${step}`).value;
+      const tokenOutput = document.getElementById(`token_output_${step}`);
+      const tokenCode = document.getElementById(`token_code_${step}`);
+      const tokenMeta = document.getElementById(`token_meta_${step}`);
+      const naceGuidance = document.getElementById("naceGuidance");
+
+      if (!artifactName || !artifactNote) {
+        naceGuidance.textContent = "Token issuance blocked. The client must first submit the screenshot reference and execution description.";
+        return;
+      }
+
+      if (!ack) {
+        naceGuidance.textContent = "Token issuance blocked. Client acknowledgment is required before the system can finalize this execution record.";
+        return;
+      }
+
+      if (pseqState.tokensIssuedThisSession.includes(step)) {
+        naceGuidance.textContent = "A token has already been issued for this step in the current session. The record is now closed.";
+        return;
+      }
+
+      const token = buildToken(step);
+      const issuedAt = new Date().toLocaleString();
+
+      tokenCode.textContent = token;
+      tokenMeta.textContent =
+        `Token issued and acknowledged on ${issuedAt}. Artifact received as presented. System review: ${reviewChoice === "agree" ? "Agree" : "Revision Recommended / Client Override"}. This token now serves as the official execution record for this step.`;
+
+      tokenOutput.classList.add("show");
+      pseqState.tokensIssuedThisSession.push(step);
+      pseqState.currentValidTokens += 1;
+
+      updateCycleState();
+
+      naceGuidance.textContent =
+        `Token issued. The system has recorded this execution as client-submitted completed work. The record is now final for this step.`;
+    }
+
+    function updateCycleState() {
+      const count = pseqState.currentValidTokens;
+      const required = pseqState.monthRequiredTokens;
+      const satisfied = count >= required;
+
+      document.getElementById("month-token-count").textContent = `${count} / ${required}`;
+      document.getElementById("valid-token-count").textContent = String(count);
+
+      if (satisfied) {
+        document.getElementById("cycle-status-pill").textContent = "Cycle Satisfied";
+        document.getElementById("cycle-status-pill").className = "pill state-green";
+        document.getElementById("cycle-status-copy").textContent = "Required token threshold has been met. New execution outputs may proceed.";
+        document.getElementById("new-output-status").textContent = "Eligible for New Outputs";
+        document.getElementById("week2-status").textContent = "Complete";
+        document.getElementById("week3-status").textContent = "Unlocked";
+        document.getElementById("lockedBanner").classList.remove("show");
+      } else {
+        document.getElementById("cycle-status-pill").textContent = count === 0 ? "No Recorded Progress" : "Partial Cycle";
+        document.getElementById("cycle-status-pill").className = count === 0 ? "pill state-red" : "pill state-amber";
+        document.getElementById("cycle-status-copy").textContent = "Four valid tokens are required to satisfy the current monthly cycle.";
+        document.getElementById("new-output-status").textContent = "Restricted Until Completion";
+        document.getElementById("lockedBanner").classList.add("show");
+
+        if (count >= 2) {
+          document.getElementById("week2-status").textContent = "In Progress";
+        }
+      }
+    }
+
+    updateCycleState();
+  </script>
+</body>
+</html> 
