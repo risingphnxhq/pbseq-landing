@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PSEQ — Execution Dashboard</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#050505;
+      --panel:#0d0f13;
+      --panel-2:#11141a;
+      --line:rgba(201,162,39,.28);
+      --line-soft:rgba(255,255,255,.08);
+      --text:#f3f4f6;
+      --muted:#9aa4b2;
+      --gold:#c9a227;
+      --gold-soft:rgba(201,162,39,.14);
+      --success:#c9a227;
+      --danger:#7e1f1f;
+      --blue:#7da7ff;
+      --max:1380px;
+      --shadow:0 0 0 1px rgba(201,162,39,.12), 0 18px 60px rgba(0,0,0,.45);
+      --radius:18px;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at top, rgba(201,162,39,.07), transparent 25%),
+        linear-gradient(180deg, #07080b 0%, #050505 100%);
+      color:var(--text);
+      font-family:"Inter", sans-serif;
+    }
+
+    a{color:inherit;text-decoration:none}
+    img{display:block;max-width:100%}
+
+    .shell{
+      width:min(calc(100% - 40px), var(--max));
+      margin:0 auto;
+    }
+
+    .topbar{
+      border-bottom:1px solid var(--line-soft);
+      background:rgba(6,7,10,.82);
+      backdrop-filter: blur(10px);
+      position:sticky;
+      top:0;
+      z-index:50;
+    }
+
+    .topbar-inner{
+      width:min(calc(100% - 40px), var(--max));
+      margin:0 auto;
+      min-height:76px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+
+    .brand img{
+      width:44px;
+      height:44px;
+      object-fit:contain;
+    }
+
+    .brand-copy .eyebrow,
+    .section-eyebrow,
+    .card-eyebrow,
+    .rail-eyebrow{
+      font-size:.76rem;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      color:var(--muted);
+    }
+
+    .brand-copy .title{
+      font-family:"Cinzel", serif;
+      font-size:1rem;
+      letter-spacing:.06em;
+    }
+
+    .top-actions{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .pill{
+      border:1px solid var(--line);
+      color:var(--gold);
+      background:rgba(201,162,39,.08);
+      padding:10px 14px;
+      border-radius:999px;
+      font-size:.82rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      font-weight:700;
+    }
+
+    .legal-links{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      color:var(--muted);
+      font-size:.92rem;
+    }
+
+    .hero{
+      padding:52px 0 26px;
+    }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns: minmax(0, 1.7fr) 350px;
+      gap:24px;
+      align-items:start;
+    }
+
+    .hero-panel,
+    .rail,
+    .main-panel,
+    .execution-card,
+    .submission-panel,
+    .disclaimer-panel,
+    .token-log-panel{
+      background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
+      border:1px solid var(--line-soft);
+      box-shadow:var(--shadow);
+      border-radius:var(--radius);
+    }
+
+    .hero-panel{
+      padding:34px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero-panel::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(90deg, rgba(201,162,39,.08), transparent 28%),
+        radial-gradient(circle at top right, rgba(125,167,255,.08), transparent 20%);
+      pointer-events:none;
+    }
+
+    .hero h1{
+      margin:12px 0 16px;
+      font-family:"Cinzel", serif;
+      font-size:clamp(2rem, 5vw, 4rem);
+      line-height:1.05;
+      letter-spacing:.02em;
+    }
+
+    .hero p.lead{
+      margin:0;
+      max-width:900px;
+      color:#d7dde6;
+      font-size:1.08rem;
+      line-height:1.75;
+    }
+
+    .hero-meta{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap:14px;
+      margin-top:28px;
+    }
+
+    .meta-box{
+      border:1px solid var(--line-soft);
+      background:rgba(255,255,255,.02);
+      border-radius:14px;
+      padding:16px;
+    }
+
+    .meta-box .label{
+      font-size:.75rem;
+      letter-spacing:.18em;
+      color:var(--muted);
+      text-transform:uppercase;
+      margin-bottom:10px;
+    }
+
+    .meta-box .value{
+      font-size:1.1rem;
+      font-weight:700;
+      color:var(--text);
+    }
+
+    .rail{
+      padding:24px;
+      position:sticky;
+      top:98px;
+    }
+
+    .rail h3{
+      font-family:"Cinzel", serif;
+      font-size:1.45rem;
+      margin:8px 0 14px;
+    }
+
+    .rail p{
+      margin:0 0 18px;
+      color:#d4dbe5;
+      line-height:1.8;
+    }
+
+    .rail-note{
+      border:1px solid var(--line);
+      background:var(--gold-soft);
+      color:#f3e1a0;
+      border-radius:14px;
+      padding:14px 15px;
+      font-size:.94rem;
+      line-height:1.7;
+    }
+
+    .layout{
+      padding:10px 0 64px;
+    }
+
+    .layout-grid{
+      display:grid;
+      grid-template-columns: minmax(0, 1.7fr) 350px;
+      gap:24px;
+      align-items:start;
+    }
+
+    .main-stack{
+      display:flex;
+      flex-direction:column;
+      gap:24px;
+    }
+
+    .main-panel{
+      padding:26px;
+    }
+
+    .panel-head{
+      display:flex;
+      justify-content:space-between;
+      gap:16px;
+      align-items:end;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+
+    .panel-head h2{
+      margin:8px 0 0;
+      font-family:"Cinzel", serif;
+      font-size:2rem;
+      line-height:1.1;
+    }
+
+    .panel-head p{
+      margin:8px 0 0;
+      color:var(--muted);
+      line-height:1.75;
+      max-width:720px;
+    }
+
+    .status-chip{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 14px;
+      border-radius:999px;
+      font-size:.88rem;
+      font-weight:700;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      border:1px solid var(--line);
+      background:rgba(201,162,39,.08);
+      color:var(--gold);
+    }
+
+    .dashboard-grid{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap:18px;
+    }
+
+    .execution-card{
+      padding:22px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .execution-card.active{
+      border-color:rgba(201,162,39,.45);
+      box-shadow:0 0 0 1px rgba(201,162,39,.18), 0 18px 50px rgba(0,0,0,.42);
+    }
+
+    .execution-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:start;
+      gap:16px;
+      margin-bottom:14px;
+    }
+
+    .execution-card h3{
+      margin:8px 0 0;
+      font-family:"Cinzel", serif;
+      font-size:1.45rem;
+    }
+
+    .execution-desc{
+      margin:0 0 16px;
+      color:#d6dde7;
+      line-height:1.7;
+      min-height:84px;
+    }
+
+    .status-badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:120px;
+      padding:10px 14px;
+      border-radius:999px;
+      font-size:.8rem;
+      font-weight:800;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      border:1px solid var(--line-soft);
+    }
+
+    .status-pending{
+      color:#c5ced9;
+      background:rgba(255,255,255,.05);
+    }
+
+    .status-submitted{
+      color:#9ec1ff;
+      background:rgba(125,167,255,.12);
+      border-color:rgba(125,167,255,.28);
+    }
+
+    .status-token{
+      color:#f3e1a0;
+      background:rgba(201,162,39,.14);
+      border-color:rgba(201,162,39,.32);
+    }
+
+    .execution-meta{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:12px;
+      margin-bottom:18px;
+    }
+
+    .execution-meta .mini{
+      border:1px solid var(--line-soft);
+      background:rgba(255,255,255,.02);
+      border-radius:12px;
+      padding:12px;
+    }
+
+    .mini .mini-label{
+      font-size:.72rem;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      color:var(--muted);
+      margin-bottom:8px;
+    }
+
+    .mini .mini-value{
+      font-weight:700;
+      color:var(--text);
+      word-break:break-word;
+    }
+
+    .action-row{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    button{
+      border:none;
+      cursor:pointer;
+      font:inherit;
+    }
+
+    .btn{
+      min-height:48px;
+      padding:0 18px;
+      border-radius:12px;
+      font-size:.92rem;
+      font-weight:800;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      transition:.18s ease;
+    }
+
+    .btn-primary{
+      background:var(--gold);
+      color:#111;
+    }
+
+    .btn-primary:hover{
+      transform:translateY(-1px);
+      filter:brightness(1.03);
+    }
+
+    .btn-secondary{
+      background:transparent;
+      color:var(--text);
+      border:1px solid var(--line);
+    }
+
+    .btn-secondary:hover{
+      background:rgba(255,255,255,.04);
+    }
+
+    .btn:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+      transform:none;
+    }
+
+    .submission-panel,
+    .disclaimer-panel,
+    .token-log-panel{
+      padding:24px;
+    }
+
+    .submission-panel h3,
+    .disclaimer-panel h3,
+    .token-log-panel h3{
+      margin:8px 0 14px;
+      font-family:"Cinzel", serif;
+      font-size:1.65rem;
+    }
+
+    .submission-panel p,
+    .disclaimer-panel p{
+      margin:0 0 16px;
+      color:#d6dde7;
+      line-height:1.8;
+    }
+
+    .hidden{
+      display:none !important;
+    }
+
+    .form-grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:16px;
+      margin-top:16px;
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .field.full{
+      grid-column:1/-1;
+    }
+
+    .field label{
+      font-size:.82rem;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      color:var(--muted);
+      font-weight:700;
+    }
+
+    input, select, textarea{
+      width:100%;
+      min-height:52px;
+      padding:14px 16px;
+      background:#0a0d12;
+      color:var(--text);
+      border:1px solid var(--line-soft);
+      border-radius:12px;
+      font:inherit;
+      outline:none;
+    }
+
+    textarea{
+      min-height:148px;
+      resize:vertical;
+    }
+
+    input:focus, select:focus, textarea:focus{
+      border-color:rgba(201,162,39,.42);
+      box-shadow:0 0 0 1px rgba(201,162,39,.2);
+    }
+
+    .checkbox-row{
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      margin-top:16px;
+      padding:16px;
+      border:1px solid var(--line-soft);
+      border-radius:14px;
+      background:rgba(255,255,255,.02);
+    }
+
+    .checkbox-row input{
+      width:18px;
+      min-height:auto;
+      margin-top:4px;
+    }
+
+    .checkbox-row label{
+      color:#dce3ec;
+      line-height:1.7;
+      font-size:.97rem;
+    }
+
+    .submit-actions{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:18px;
+    }
+
+    .note-line{
+      margin-top:14px;
+      color:var(--muted);
+      font-size:.94rem;
+      line-height:1.7;
+    }
+
+    .disclaimer-panel{
+      border-color:rgba(201,162,39,.2);
+      background:linear-gradient(180deg, rgba(201,162,39,.08), rgba(255,255,255,.015));
+    }
+
+    .disclaimer-copy{
+      border-left:3px solid var(--gold);
+      padding-left:16px;
+      color:#f1f4f8;
+    }
+
+    .token-list{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      margin-top:18px;
+    }
+
+    .token-item{
+      border:1px solid var(--line-soft);
+      border-radius:14px;
+      padding:16px;
+      background:rgba(255,255,255,.02);
+    }
+
+    .token-item-top{
+      display:flex;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+
+    .token-id{
+      color:#f3e1a0;
+      font-weight:800;
+      letter-spacing:.05em;
+    }
+
+    .token-time{
+      color:var(--muted);
+      font-size:.92rem;
+    }
+
+    .token-meta{
+      color:#d7dee8;
+      line-height:1.7;
+      font-size:.95rem;
+    }
+
+    .rail-stack{
+      display:flex;
+      flex-direction:column;
+      gap:24px;
+    }
+
+    .right-panel{
+      background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
+      border:1px solid var(--line-soft);
+      box-shadow:var(--shadow);
+      border-radius:var(--radius);
+      padding:22px;
+    }
+
+    .right-panel h4{
+      margin:8px 0 12px;
+      font-family:"Cinzel", serif;
+      font-size:1.35rem;
+    }
+
+    .right-panel p{
+      margin:0 0 14px;
+      color:#d6dde7;
+      line-height:1.8;
+    }
+
+    .progress-stat{
+      border:1px solid var(--line-soft);
+      border-radius:14px;
+      padding:14px;
+      background:rgba(255,255,255,.02);
+      margin-bottom:12px;
+    }
+
+    .progress-stat .label{
+      font-size:.74rem;
+      letter-spacing:.15em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-bottom:8px;
+    }
+
+    .progress-stat .value{
+      font-size:1.18rem;
+      font-weight:800;
+    }
+
+    .footer{
+      padding:18px 0 40px;
+      color:var(--muted);
+    }
+
+    .footer-box{
+      border:1px solid var(--line-soft);
+      border-radius:16px;
+      padding:18px 22px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      flex-wrap:wrap;
+      background:rgba(255,255,255,.02);
+    }
+
+    .flow{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      font-size:.98rem;
+    }
+
+    .flow strong{
+      color:var(--gold);
+    }
+
+    @media (max-width: 1180px){
+      .hero-grid,
+      .layout-grid{
+        grid-template-columns:1fr;
+      }
+
+      .rail{
+        position:static;
+      }
+    }
+
+    @media (max-width: 860px){
+      .hero-meta,
+      .dashboard-grid,
+      .form-grid{
+        grid-template-columns:1fr;
+      }
+
+      .execution-meta{
+        grid-template-columns:1fr;
+      }
+
+      .topbar-inner,
+      .footer-box{
+        align-items:flex-start;
+      }
+
+      .hero-panel,
+      .main-panel,
+      .submission-panel,
+      .disclaimer-panel,
+      .token-log-panel,
+      .right-panel{
+        padding:20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <img src="./logo.png" alt="Phoenix Business System logo">
+        <div class="brand-copy">
+          <div class="eyebrow">Phoenix Business System</div>
+          <div class="title">PSEQ — Execution Dashboard</div>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <div class="pill" id="billingPill">Billing: Active</div>
+        <div class="legal-links">
+          <a href="./index.html">Landing</a>
+          <a href="./terms.html">Terms</a>
+          <a href="./privacy.html">Privacy</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="shell hero-grid">
+      <div class="hero-panel">
+        <div class="section-eyebrow">Execution Governance Layer</div>
+        <h1>Monthly execution control with token-based closure.</h1>
+        <p class="lead">
+          PSEQ governs forward movement through a fixed four-execution monthly cycle. Payment alone does not authorize progression. Progression is granted only through closed execution records and issued tokens.
+        </p>
+
+        <div class="hero-meta">
+          <div class="meta-box">
+            <div class="label">Active Cycle</div>
+            <div class="value" id="cycleLabel">April 2026</div>
+          </div>
+          <div class="meta-box">
+            <div class="label">Execution Cadence</div>
+            <div class="value">Weekly</div>
+          </div>
+          <div class="meta-box">
+            <div class="label">Token Threshold</div>
+            <div class="value">4 Per Cycle</div>
+          </div>
+          <div class="meta-box">
+            <div class="label">Progression</div>
+            <div class="value" id="heroProgression">Locked</div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="rail">
+        <div class="rail-eyebrow">NACE</div>
+        <h3>Institutional Interface</h3>
+        <p>
+          This layer governs execution acknowledgment. Work is sequenced, submitted, received, and closed into record.
+        </p>
+        <div class="rail-note">
+          Progression is based on completed execution records, not assumed momentum. Guidance remains present, quiet, and subordinate to the governed flow.
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <main class="layout">
+    <div class="shell layout-grid">
+      <div class="main-stack">
+        <section class="main-panel">
+          <div class="panel-head">
+            <div>
+              <div class="section-eyebrow">Cycle Dashboard</div>
+              <h2>Four executions. One governed monthly record.</h2>
+              <p>
+                Each execution must move from pending to submitted to token issued. New progression remains locked until all four execution records are closed for the cycle.
+              </p>
+            </div>
+            <div class="status-chip" id="progressionChip">Progression Locked</div>
+          </div>
+
+          <div class="dashboard-grid" id="executionGrid"></div>
+        </section>
+
+        <section class="submission-panel hidden" id="submissionPanel">
+          <div class="card-eyebrow">Execution Submission</div>
+          <h3 id="submissionTitle">Submit Execution</h3>
+          <p>
+            Submitted artifacts are used as reference only. Token issuance represents client-declared completion of execution. The system records acknowledgment, not verification of real-world outcomes.
+          </p>
+
+          <form id="submissionForm">
+            <div class="form-grid">
+              <div class="field">
+                <label for="artifactType">Artifact Type</label>
+                <select id="artifactType" required>
+                  <option value="">Select artifact type</option>
+                  <option value="Screenshot">Screenshot</option>
+                  <option value="Document">Document</option>
+                  <option value="Written Summary">Written Summary</option>
+                  <option value="Upload Confirmation">Upload Confirmation</option>
+                  <option value="Form Confirmation">Form Confirmation</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="artifactReference">Artifact Reference</label>
+                <input id="artifactReference" type="text" placeholder="Paste short file name, note, or reference" required />
+              </div>
+
+              <div class="field full">
+                <label for="artifactSummary">Execution Summary</label>
+                <textarea id="artifactSummary" placeholder="State what was completed for this execution session." required></textarea>
+              </div>
+            </div>
+
+            <div class="checkbox-row">
+              <input type="checkbox" id="clientDeclaration" required />
+              <label for="clientDeclaration">
+                I declare that I completed the execution required for this session and understand that token issuance serves as the formal acknowledgment record for this execution.
+              </label>
+            </div>
+
+            <div class="submit-actions">
+              <button type="submit" class="btn btn-primary">Submit Execution</button>
+              <button type="button" class="btn btn-secondary" id="cancelSubmission">Cancel</button>
+            </div>
+
+            <div class="note-line">
+              Once your token is produced, this serves as proof that you acceptingly acknowledge that you fulfilled the execution required for that session.
+            </div>
+          </form>
+        </section>
+
+        <section class="disclaimer-panel">
+          <div class="card-eyebrow">Token Doctrine</div>
+          <h3>Artifact supports. Token closes.</h3>
+          <p class="disclaimer-copy">
+            Submitted artifacts are used as reference only. Token issuance represents client-declared completion of execution. The system records acknowledgment, not verification of real-world outcomes.
+          </p>
+          <p>
+            Payment does not equal progression. Subscription state and progression state are separate. PSEQ advances only through issued token records inside the active cycle.
+          </p>
+        </section>
+
+        <section class="token-log-panel">
+          <div class="card-eyebrow">Receipts Log</div>
+          <h3>Issued tokens for current cycle</h3>
+          <div class="token-list" id="tokenList"></div>
+        </section>
+      </div>
+
+      <aside class="rail-stack">
+        <section class="right-panel">
+          <div class="rail-eyebrow">Cycle Control</div>
+          <h4>Execution posture</h4>
+
+          <div class="progress-stat">
+            <div class="label">Billing Status</div>
+            <div class="value" id="billingStatus">Active</div>
+          </div>
+
+          <div class="progress-stat">
+            <div class="label">Tokens Issued</div>
+            <div class="value"><span id="tokensIssued">0</span> / 4</div>
+          </div>
+
+          <div class="progress-stat">
+            <div class="label">Progression State</div>
+            <div class="value" id="progressionState">Locked</div>
+          </div>
+
+          <p>
+            If fewer than four tokens are issued during the active cycle, progression remains locked even if billing is active.
+          </p>
+        </section>
+
+        <section class="right-panel">
+          <div class="rail-eyebrow">Build State</div>
+          <h4>Phase 1 local system</h4>
+          <p>
+            This dashboard uses local browser storage for cycle persistence. Supabase can replace this storage layer in Phase 2 without changing the governing logic.
+          </p>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="shell">
+      <div class="footer-box">
+        <div class="flow">
+          <span>System Flow</span>
+          <span>PQS</span>
+          <span>→</span>
+          <span>PBRS</span>
+          <span>→</span>
+          <span>PBB</span>
+          <span>→</span>
+          <strong>PSEQ</strong>
+          <span>→</span>
+          <span>PNC</span>
+        </div>
+
+        <div class="legal-links">
+          <span>© Rising Phoenix Enterprises</span>
+          <a href="./terms.html">Terms</a>
+          <a href="./privacy.html">Privacy</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const STORAGE_KEY = "pseq_active_cycle_v1";
+    const TOKEN_KEY = "pseq_tokens_v1";
+
+    const executionBlueprint = [
+      {
+        week_number: 1,
+        title: "Week 1 Execution",
+        description: "First governed execution for the active monthly cycle. Client must complete and submit the required action to begin recorded forward movement."
+      },
+      {
+        week_number: 2,
+        title: "Week 2 Execution",
+        description: "Second execution slot in the active cycle. Progress continues only by tokenized closure, not by assumption of effort."
+      },
+      {
+        week_number: 3,
+        title: "Week 3 Execution",
+        description: "Third execution slot. Submission must include declared completion before token issuance becomes available."
+      },
+      {
+        week_number: 4,
+        title: "Week 4 Execution",
+        description: "Final execution slot for the cycle. Full progression eligibility requires closure of all four execution records."
+      }
+    ];
+
+    function getMonthLabel() {
+      const d = new Date();
+      return d.toLocaleString("en-US", { month: "long", year: "numeric" });
+    }
+
+    function getCycleId() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      return `PSEQ-${y}-${m}`;
+    }
+
+    function initializeCycle() {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) return JSON.parse(stored);
+
+      const cycleId = getCycleId();
+      const monthLabel = getMonthLabel();
+
+      const cycle = {
+        cycle_id: cycleId,
+        month_label: monthLabel,
+        billing_status: "active",
+        token_threshold: 4,
+        tokens_issued: 0,
+        progression_status: "locked",
+        executions: executionBlueprint.map(item => ({
+          execution_id: `${cycleId}-W${item.week_number}`,
+          week_number: item.week_number,
+          title: item.title,
+          description: item.description,
+          status: "pending",
+          artifact_type: "",
+          artifact_value: "",
+          artifact_summary: "",
+          client_declaration: false,
+          submitted_at: "",
+          token_issued: false,
+          token_id: "",
+          token_timestamp: ""
+        }))
+      };
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(cycle));
+      localStorage.setItem(TOKEN_KEY, JSON.stringify([]));
+      return cycle;
+    }
+
+    let cycle = initializeCycle();
+    let selectedExecutionId = null;
+
+    const executionGrid = document.getElementById("executionGrid");
+    const tokenList = document.getElementById("tokenList");
+    const submissionPanel = document.getElementById("submissionPanel");
+    const submissionForm = document.getElementById("submissionForm");
+    const submissionTitle = document.getElementById("submissionTitle");
+    const cancelSubmission = document.getElementById("cancelSubmission");
+
+    function saveCycle() {
+      cycle.tokens_issued = cycle.executions.filter(e => e.token_issued).length;
+      cycle.progression_status = cycle.tokens_issued >= cycle.token_threshold ? "eligible" : "locked";
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(cycle));
+    }
+
+    function getStoredTokens() {
+      return JSON.parse(localStorage.getItem(TOKEN_KEY) || "[]");
+    }
+
+    function saveToken(token) {
+      const tokens = getStoredTokens();
+      tokens.unshift(token);
+      localStorage.setItem(TOKEN_KEY, JSON.stringify(tokens));
+    }
+
+    function tokenId() {
+      const now = new Date();
+      const stamp = [
+        now.getFullYear(),
+        String(now.getMonth() + 1).padStart(2, "0"),
+        String(now.getDate()).padStart(2, "0"),
+        String(now.getHours()).padStart(2, "0"),
+        String(now.getMinutes()).padStart(2, "0"),
+        String(now.getSeconds()).padStart(2, "0")
+      ].join("");
+      return `TKN-${cycle.cycle_id}-${stamp}`;
+    }
+
+    function formatTime(ts) {
+      return new Date(ts).toLocaleString();
+    }
+
+    function renderTopState() {
+      document.getElementById("cycleLabel").textContent = cycle.month_label;
+      document.getElementById("tokensIssued").textContent = cycle.tokens_issued;
+      document.getElementById("billingStatus").textContent = capitalize(cycle.billing_status);
+      document.getElementById("billingPill").textContent = `Billing: ${capitalize(cycle.billing_status)}`;
+      document.getElementById("heroProgression").textContent = capitalize(cycle.progression_status);
+      document.getElementById("progressionState").textContent = capitalize(cycle.progression_status);
+
+      const chip = document.getElementById("progressionChip");
+      chip.textContent = cycle.progression_status === "eligible" ? "Progression Eligible" : "Progression Locked";
+    }
+
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    function statusBadge(status) {
+      if (status === "submitted") return `<span class="status-badge status-submitted">Submitted</span>`;
+      if (status === "token_issued") return `<span class="status-badge status-token">Token Issued</span>`;
+      return `<span class="status-badge status-pending">Pending</span>`;
+    }
+
+    function renderExecutions() {
+      executionGrid.innerHTML = "";
+
+      cycle.executions.forEach(execution => {
+        const card = document.createElement("article");
+        card.className = `execution-card ${selectedExecutionId === execution.execution_id ? "active" : ""}`;
+
+        card.innerHTML = `
+          <div class="execution-top">
+            <div>
+              <div class="card-eyebrow">Execution ${execution.week_number}</div>
+              <h3>${execution.title}</h3>
+            </div>
+            ${statusBadge(execution.status)}
+          </div>
+
+          <p class="execution-desc">${execution.description}</p>
+
+          <div class="execution-meta">
+            <div class="mini">
+              <div class="mini-label">Submission State</div>
+              <div class="mini-value">${execution.status === "pending" ? "Awaiting submission" : execution.status === "submitted" ? "Submission received" : "Execution closed"}</div>
+            </div>
+            <div class="mini">
+              <div class="mini-label">Token Record</div>
+              <div class="mini-value">${execution.token_id ? execution.token_id : "Not issued yet"}</div>
+            </div>
+          </div>
+
+          <div class="action-row">
+            <button class="btn btn-primary" ${execution.token_issued ? "disabled" : ""} data-action="open" data-id="${execution.execution_id}">
+              ${execution.status === "pending" ? "Submit Execution" : execution.status === "submitted" ? "Issue Token" : "Closed"}
+            </button>
+            <button class="btn btn-secondary" data-action="view" data-id="${execution.execution_id}">
+              View Record
+            </button>
+          </div>
+        `;
+
+        executionGrid.appendChild(card);
+      });
+    }
+
+    function renderTokens() {
+      const tokens = getStoredTokens();
+
+      if (!tokens.length) {
+        tokenList.innerHTML = `
+          <div class="token-item">
+            <div class="token-meta">No tokens have been issued for the active cycle yet.</div>
+          </div>
+        `;
+        return;
+      }
+
+      tokenList.innerHTML = tokens.map(token => `
+        <div class="token-item">
+          <div class="token-item-top">
+            <div class="token-id">${token.token_id}</div>
+            <div class="token-time">${formatTime(token.issued_at)}</div>
+          </div>
+          <div class="token-meta">
+            <strong>Execution:</strong> ${token.execution_id}<br>
+            <strong>Cycle:</strong> ${token.cycle_id}<br>
+            <strong>Acknowledgment:</strong> Once your token is produced, this serves as proof that you acceptingly acknowledge that you fulfilled the execution required for that session.
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function openSubmission(executionId) {
+      selectedExecutionId = executionId;
+      const execution = cycle.executions.find(e => e.execution_id === executionId);
+      if (!execution || execution.token_issued) return;
+
+      submissionTitle.textContent = execution.status === "submitted"
+        ? `Issue Token — ${execution.title}`
+        : `Submit Execution — ${execution.title}`;
+
+      document.getElementById("artifactType").value = execution.artifact_type || "";
+      document.getElementById("artifactReference").value = execution.artifact_value || "";
+      document.getElementById("artifactSummary").value = execution.artifact_summary || "";
+      document.getElementById("clientDeclaration").checked = execution.client_declaration || false;
+
+      submissionPanel.classList.remove("hidden");
+      submissionPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      renderExecutions();
+    }
+
+    function closeSubmission() {
+      selectedExecutionId = null;
+      submissionPanel.classList.add("hidden");
+      submissionForm.reset();
+      renderExecutions();
+    }
+
+    function issueToken(execution) {
+      const now = new Date().toISOString();
+      const newTokenId = tokenId();
+
+      execution.status = "token_issued";
+      execution.token_issued = true;
+      execution.token_id = newTokenId;
+      execution.token_timestamp = now;
+
+      const tokenRecord = {
+        token_id: newTokenId,
+        cycle_id: cycle.cycle_id,
+        execution_id: execution.execution_id,
+        issued_at: now,
+        acknowledgment: "Once your token is produced, this serves as proof that you acceptingly acknowledge that you fulfilled the execution required for that session."
+      };
+
+      saveToken(tokenRecord);
+      saveCycle();
+      renderAll();
+      closeSubmission();
+    }
+
+    executionGrid.addEventListener("click", (e) => {
+      const button = e.target.closest("button");
+      if (!button) return;
+
+      const action = button.dataset.action;
+      const id = button.dataset.id;
+      const execution = cycle.executions.find(x => x.execution_id === id);
+      if (!execution) return;
+
+      if (action === "open") {
+        if (execution.status === "submitted") {
+          selectedExecutionId = id;
+          issueToken(execution);
+        } else if (!execution.token_issued) {
+          openSubmission(id);
+        }
+      }
+
+      if (action === "view") {
+        openSubmission(id);
+      }
+    });
+
+    submissionForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      if (!selectedExecutionId) return;
+
+      const execution = cycle.executions.find(x => x.execution_id === selectedExecutionId);
+      if (!execution) return;
+
+      execution.artifact_type = document.getElementById("artifactType").value.trim();
+      execution.artifact_value = document.getElementById("artifactReference").value.trim();
+      execution.artifact_summary = document.getElementById("artifactSummary").value.trim();
+      execution.client_declaration = document.getElementById("clientDeclaration").checked;
+
+      if (!execution.artifact_type || !execution.artifact_value || !execution.artifact_summary || !execution.client_declaration) {
+        alert("Artifact, summary, and declaration are required.");
+        return;
+      }
+
+      execution.status = "submitted";
+      execution.submitted_at = new Date().toISOString();
+
+      saveCycle();
+      renderAll();
+
+      const shouldIssue = confirm("Submission recorded. Issue token now?");
+      if (shouldIssue) {
+        issueToken(execution);
+      } else {
+        closeSubmission();
+      }
+    });
+
+    cancelSubmission.addEventListener("click", closeSubmission);
+
+    function renderAll() {
+      saveCycle();
+      renderTopState();
+      renderExecutions();
+      renderTokens();
+    }
+
+    renderAll();
+  </script>
+</body>
+</html> 
