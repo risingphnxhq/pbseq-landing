@@ -1,26 +1,374 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Terms of Service</title>
-</head>
-<body>
-  <h1>Terms of Service</h1>
-  <p>All services are provided by RPE Holdings LLC.</p>
-  <p>All products are informational and non-advisory.</p>
-  <p>No guarantees of financial outcome are expressed or implied.</p>
-  <p>By purchasing, you agree to these terms.</p>
-</body>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PBS — Privacy Policy</title>
 
-</html>
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Privacy Policy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#050505;
+      --panel:#0d0f13;
+      --panel-2:#10141a;
+      --line:rgba(201,162,39,.22);
+      --line-soft:rgba(255,255,255,.08);
+      --text:#f3f4f6;
+      --muted:#9aa4b2;
+      --gold:#c9a227;
+      --gold-soft:rgba(201,162,39,.12);
+      --max:1120px;
+      --radius:20px;
+      --shadow:0 0 0 1px rgba(201,162,39,.10), 0 18px 60px rgba(0,0,0,.45);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:"Inter", sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top, rgba(201,162,39,.06), transparent 26%),
+        linear-gradient(180deg, #07080b 0%, #050505 100%);
+    }
+
+    a{color:inherit;text-decoration:none}
+    .shell{width:min(calc(100% - 32px), var(--max));margin:0 auto}
+
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:40;
+      background:rgba(6,7,10,.84);
+      backdrop-filter:blur(10px);
+      border-bottom:1px solid var(--line-soft);
+    }
+
+    .topbar-inner{
+      width:min(calc(100% - 32px), var(--max));
+      margin:0 auto;
+      min-height:76px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+
+    .brand img{
+      width:42px;
+      height:42px;
+      object-fit:contain;
+      flex:0 0 auto;
+    }
+
+    .eyebrow{
+      font-size:.74rem;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      color:var(--muted);
+    }
+
+    .brand-title{
+      font-family:"Cinzel", serif;
+      font-size:1rem;
+      line-height:1.2;
+      letter-spacing:.05em;
+    }
+
+    .nav{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      flex-wrap:wrap;
+      color:var(--muted);
+      font-size:.94rem;
+    }
+
+    .nav a:hover{color:var(--text)}
+
+    .hero{
+      padding:48px 0 22px;
+    }
+
+    .hero-card{
+      background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
+      border:1px solid var(--line-soft);
+      box-shadow:var(--shadow);
+      border-radius:var(--radius);
+      padding:34px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero-card::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(90deg, rgba(201,162,39,.08), transparent 28%),
+        radial-gradient(circle at top right, rgba(201,162,39,.05), transparent 18%);
+      pointer-events:none;
+    }
+
+    h1{
+      margin:10px 0 14px;
+      font-family:"Cinzel", serif;
+      font-size:clamp(2rem, 5vw, 3.6rem);
+      line-height:1.06;
+    }
+
+    .hero-copy{
+      max-width:860px;
+      color:#d5dce6;
+      font-size:1.05rem;
+      line-height:1.8;
+      margin:0;
+    }
+
+    .hero-note{
+      margin-top:22px;
+      padding:14px 16px;
+      border:1px solid var(--line);
+      background:var(--gold-soft);
+      border-radius:14px;
+      color:#f3e1a0;
+      line-height:1.7;
+      font-size:.95rem;
+    }
+
+    .content{
+      padding:8px 0 44px;
+    }
+
+    .stack{
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+    }
+
+    .section{
+      background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
+      border:1px solid var(--line-soft);
+      box-shadow:var(--shadow);
+      border-radius:18px;
+      padding:24px;
+    }
+
+    .section h2{
+      margin:8px 0 14px;
+      font-family:"Cinzel", serif;
+      font-size:1.55rem;
+      line-height:1.15;
+    }
+
+    .section p{
+      margin:0 0 14px;
+      color:#d7dee8;
+      line-height:1.82;
+    }
+
+    .section p:last-child{margin-bottom:0}
+
+    .section ul{
+      margin:0;
+      padding-left:20px;
+      color:#d7dee8;
+      line-height:1.82;
+    }
+
+    .section li + li{
+      margin-top:8px;
+    }
+
+    .callout{
+      border-left:3px solid var(--gold);
+      padding-left:14px;
+      color:#f0f4f8;
+    }
+
+    .footer{
+      padding:0 0 40px;
+      color:var(--muted);
+    }
+
+    .footer-box{
+      border:1px solid var(--line-soft);
+      border-radius:16px;
+      padding:18px 20px;
+      display:flex;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+      background:rgba(255,255,255,.02);
+    }
+
+    @media (max-width: 720px){
+      .hero-card, .section{padding:20px}
+      .topbar-inner{align-items:flex-start}
+      h1{font-size:clamp(1.8rem, 9vw, 2.8rem)}
+    }
+  </style>
 </head>
 <body>
-  <h1>Privacy Policy</h1>
-  <p>RPE Holdings LLC collects only necessary contact and transaction data.</p>
-  <p>We do not sell user data.</p>
-  <p>Data is stored securely and used solely for service fulfillment.</p>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <img src="./logo.png" alt="Phoenix Business System logo">
+        <div>
+          <div class="eyebrow">Phoenix Business System</div>
+          <div class="brand-title">Official Privacy Policy</div>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a href="./index.html">Landing</a>
+        <a href="./dashboard.html">Execution Dashboard</a>
+        <a href="./terms.html">Terms</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="shell">
+      <div class="hero-card">
+        <div class="eyebrow">PBS Legal Policy</div>
+        <h1>Privacy Policy</h1>
+        <p class="hero-copy">
+          This Privacy Policy explains how Phoenix Business System (“PBS”), operated through Rising Phoenix Enterprises, collects, uses, stores, and protects information submitted through PBS surfaces, pages, forms, assessments, execution layers, and related service pathways.
+        </p>
+        <div class="hero-note">
+          By using PBS, you acknowledge this policy and consent to the handling of information as described here.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="content">
+    <div class="shell">
+      <div class="stack">
+
+        <section class="section">
+          <div class="eyebrow">Information Collection</div>
+          <h2>1. Information We May Collect</h2>
+          <p>Depending on the PBS surface used, we may collect information you choose to provide, including:</p>
+          <ul>
+            <li>name, email address, phone number, and other contact details,</li>
+            <li>business information, operational details, responses, and intake data,</li>
+            <li>uploaded materials, summaries, declarations, or execution-related submissions,</li>
+            <li>billing and transaction-related information processed through approved payment providers,</li>
+            <li>communications or support-related information you voluntarily provide.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <div class="eyebrow">Use of Information</div>
+          <h2>2. How Information Is Used</h2>
+          <p>We may use submitted information to:</p>
+          <ul>
+            <li>deliver PBS products, pathways, structured outputs, and service access,</li>
+            <li>administer user progression, execution acknowledgment, or governed service states,</li>
+            <li>process transactions and maintain service continuity,</li>
+            <li>respond to inquiries, support requests, or operational contact needs,</li>
+            <li>improve clarity, continuity, administration, and quality of PBS services.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <div class="eyebrow">Data Position</div>
+          <h2>3. Limited Use Principle</h2>
+          <p class="callout">
+            We collect and use information primarily for service delivery, structured PBS administration, transaction continuity, and related operational purposes.
+          </p>
+          <p>
+            We do not state that user information is sold as a business practice. Data use is directed toward service functionality, service administration, lawful business operation, and continuity of the PBS experience.
+          </p>
+        </section>
+
+        <section class="section">
+          <div class="eyebrow">Payments</div>
+          <h2>4. Payment Information</h2>
+          <p>
+            Payments may be processed through approved third-party payment processors. We do not necessarily store full payment card details directly on PBS pages. Payment-related information may be handled according to the policies and security practices of the processor used.
+          </p>
+        </section>
+
+        <section class="section">
+          <div class="eyebrow">Uploads and Submissions</div>
+          <h2>5. Uploaded Materials and Execution Submissions</h2>
+          <p>
+            If a PBS surface allows documents, summaries, declarations, screenshots, or other client-submitted materials, those materials may be used to support service delivery, execution acknowledgment, system administration, or related continuity functions within the applicable PBS pathway.
+          </p>
+          <p>
+            Users remain responsible for ensuring that submitted materials are lawful, accurate, appropriate, and authorized for submission.
+          </p>
+        </section>
+
+        <section class="section">
+          <div class="eyebrow">Retention</div>
+          <h2>6. Data Retention</h2>
+          <p>
+            We may retain submitted information, service records, transaction records, acknowledgment records, and related materials for as long as reasonably necessary to operate PBS, maintain continuity, comply with legal obligations, resolve disputes, protect system integrity, or preserve service history.
+          </p>
+        </section>
+
+        <section class="section">
+          <div class="eyebrow">Protection</div>
+          <h2>7. Data Security</h2>
+          <p>
+            We take reasonable measures intended to protect information from unauthorized access, misuse, alteration, or disclosure. However, no internet-based system, transmission method, or digital storage environment can be guaranteed to be completely secure.
+          </p>
+        </section>
+
+        <section class="section">
+          <div class="eyebrow">Third Parties</div>
+          <h2>8. Third-Party Services</h2>
+          <p>
+            PBS may rely on third-party services for hosting, communication, analytics, payment processing, delivery support, or related operations. Where such services are used, information may be processed through those providers to support PBS functionality and lawful business operations.
+          </p>
+        </section>
+
+        <section class="section">
+          <div class="eyebrow">User Choice</div>
+          <h2>9. Your Use of PBS</h2>
+          <p>
+            You may choose not to provide certain information, but doing so may limit access to specific PBS surfaces, outputs, pathways, purchases, or governed service functions.
+          </p>
+        </section>
+
+        <section class="section">
+          <div class="eyebrow">Policy Updates</div>
+          <h2>10. Updates to This Privacy Policy</h2>
+          <p>
+            This Privacy Policy may be revised from time to time to reflect operational, legal, structural, or service changes. Continued use of PBS after an update constitutes acceptance of the revised policy as posted on this page.
+          </p>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="shell">
+      <div class="footer-box">
+        <div>© Rising Phoenix Enterprises · Phoenix Business System</div>
+        <div class="nav">
+          <a href="./index.html">Landing</a>
+          <a href="./dashboard.html">Execution Dashboard</a>
+          <a href="./terms.html">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+  </footer>
 </body>
-</html>
+</html> 
