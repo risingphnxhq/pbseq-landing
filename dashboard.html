@@ -20,8 +20,6 @@
       --muted:#9aa4b2;
       --gold:#c9a227;
       --gold-soft:rgba(201,162,39,.14);
-      --success:#c9a227;
-      --danger:#7e1f1f;
       --blue:#7da7ff;
       --max:1380px;
       --shadow:0 0 0 1px rgba(201,162,39,.12), 0 18px 60px rgba(0,0,0,.45);
@@ -41,6 +39,7 @@
 
     a{color:inherit;text-decoration:none}
     img{display:block;max-width:100%}
+    button{border:none;cursor:pointer;font:inherit}
 
     .shell{
       width:min(calc(100% - 40px), var(--max));
@@ -70,12 +69,14 @@
       display:flex;
       align-items:center;
       gap:14px;
+      min-width:0;
     }
 
     .brand img{
       width:44px;
       height:44px;
       object-fit:contain;
+      flex:0 0 auto;
     }
 
     .brand-copy .eyebrow,
@@ -92,6 +93,7 @@
       font-family:"Cinzel", serif;
       font-size:1rem;
       letter-spacing:.06em;
+      line-height:1.2;
     }
 
     .top-actions{
@@ -99,6 +101,7 @@
       align-items:center;
       gap:12px;
       flex-wrap:wrap;
+      justify-content:flex-end;
     }
 
     .pill{
@@ -111,6 +114,7 @@
       letter-spacing:.08em;
       text-transform:uppercase;
       font-weight:700;
+      white-space:nowrap;
     }
 
     .legal-links{
@@ -119,6 +123,11 @@
       gap:14px;
       color:var(--muted);
       font-size:.92rem;
+      flex-wrap:wrap;
+    }
+
+    .legal-links a:hover{
+      color:var(--text);
     }
 
     .hero{
@@ -127,7 +136,7 @@
 
     .hero-grid{
       display:grid;
-      grid-template-columns: minmax(0, 1.7fr) 350px;
+      grid-template-columns:minmax(0, 1.7fr) 350px;
       gap:24px;
       align-items:start;
     }
@@ -138,7 +147,8 @@
     .execution-card,
     .submission-panel,
     .disclaimer-panel,
-    .token-log-panel{
+    .token-log-panel,
+    .right-panel{
       background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
       border:1px solid var(--line-soft);
       box-shadow:var(--shadow);
@@ -167,11 +177,12 @@
       font-size:clamp(2rem, 5vw, 4rem);
       line-height:1.05;
       letter-spacing:.02em;
+      max-width:1000px;
     }
 
     .hero p.lead{
       margin:0;
-      max-width:900px;
+      max-width:920px;
       color:#d7dde6;
       font-size:1.08rem;
       line-height:1.75;
@@ -179,7 +190,7 @@
 
     .hero-meta{
       display:grid;
-      grid-template-columns: repeat(4, minmax(0,1fr));
+      grid-template-columns:repeat(4, minmax(0,1fr));
       gap:14px;
       margin-top:28px;
     }
@@ -215,6 +226,7 @@
       font-family:"Cinzel", serif;
       font-size:1.45rem;
       margin:8px 0 14px;
+      line-height:1.15;
     }
 
     .rail p{
@@ -239,7 +251,7 @@
 
     .layout-grid{
       display:grid;
-      grid-template-columns: minmax(0, 1.7fr) 350px;
+      grid-template-columns:minmax(0, 1.7fr) 350px;
       gap:24px;
       align-items:start;
     }
@@ -274,7 +286,7 @@
       margin:8px 0 0;
       color:var(--muted);
       line-height:1.75;
-      max-width:720px;
+      max-width:760px;
     }
 
     .status-chip{
@@ -290,11 +302,12 @@
       border:1px solid var(--line);
       background:rgba(201,162,39,.08);
       color:var(--gold);
+      white-space:nowrap;
     }
 
     .dashboard-grid{
       display:grid;
-      grid-template-columns: repeat(2, minmax(0,1fr));
+      grid-template-columns:repeat(2, minmax(0,1fr));
       gap:18px;
     }
 
@@ -315,12 +328,14 @@
       align-items:start;
       gap:16px;
       margin-bottom:14px;
+      flex-wrap:wrap;
     }
 
     .execution-card h3{
       margin:8px 0 0;
       font-family:"Cinzel", serif;
       font-size:1.45rem;
+      line-height:1.15;
     }
 
     .execution-desc{
@@ -387,18 +402,13 @@
       font-weight:700;
       color:var(--text);
       word-break:break-word;
+      line-height:1.35;
     }
 
     .action-row{
       display:flex;
       gap:12px;
       flex-wrap:wrap;
-    }
-
-    button{
-      border:none;
-      cursor:pointer;
-      font:inherit;
     }
 
     .btn{
@@ -450,6 +460,7 @@
       margin:8px 0 14px;
       font-family:"Cinzel", serif;
       font-size:1.65rem;
+      line-height:1.15;
     }
 
     .submission-panel p,
@@ -525,6 +536,7 @@
       width:18px;
       min-height:auto;
       margin-top:4px;
+      flex:0 0 auto;
     }
 
     .checkbox-row label{
@@ -584,6 +596,7 @@
       color:#f3e1a0;
       font-weight:800;
       letter-spacing:.05em;
+      word-break:break-word;
     }
 
     .token-time{
@@ -604,10 +617,6 @@
     }
 
     .right-panel{
-      background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
-      border:1px solid var(--line-soft);
-      box-shadow:var(--shadow);
-      border-radius:var(--radius);
       padding:22px;
     }
 
@@ -615,6 +624,7 @@
       margin:8px 0 12px;
       font-family:"Cinzel", serif;
       font-size:1.35rem;
+      line-height:1.15;
     }
 
     .right-panel p{
@@ -642,6 +652,7 @@
     .progress-stat .value{
       font-size:1.18rem;
       font-weight:800;
+      line-height:1.2;
     }
 
     .footer{
@@ -707,6 +718,44 @@
       .token-log-panel,
       .right-panel{
         padding:20px;
+      }
+
+      .hero h1{
+        font-size:clamp(1.9rem, 8vw, 3rem);
+      }
+
+      .panel-head h2{
+        font-size:1.7rem;
+      }
+    }
+
+    @media (max-width: 560px){
+      .shell,
+      .topbar-inner{
+        width:min(calc(100% - 24px), var(--max));
+      }
+
+      .brand{
+        gap:10px;
+      }
+
+      .brand img{
+        width:38px;
+        height:38px;
+      }
+
+      .pill{
+        font-size:.75rem;
+        padding:9px 12px;
+      }
+
+      .legal-links{
+        font-size:.86rem;
+        gap:10px;
+      }
+
+      .action-row .btn{
+        width:100%;
       }
     }
   </style>
@@ -864,7 +913,7 @@
       <aside class="rail-stack">
         <section class="right-panel">
           <div class="rail-eyebrow">Cycle Control</div>
-          <h4>Execution posture</h4>
+          <h4>Execution Posture</h4>
 
           <div class="progress-stat">
             <div class="label">Billing Status</div>
@@ -888,9 +937,12 @@
 
         <section class="right-panel">
           <div class="rail-eyebrow">Build State</div>
-          <h4>Phase 1 local system</h4>
+          <h4>Execution Access Position</h4>
           <p>
-            This dashboard uses local browser storage for cycle persistence. Supabase can replace this storage layer in Phase 2 without changing the governing logic.
+            This surface governs the client’s current execution standing within the active cycle.
+          </p>
+          <p>
+            Forward movement is determined by closed execution records and issued tokens, preserving structured continuity across the governed PBS path.
           </p>
         </section>
       </aside>
@@ -923,8 +975,8 @@
   </footer>
 
   <script>
-    const STORAGE_KEY = "pseq_active_cycle_v1";
-    const TOKEN_KEY = "pseq_tokens_v1";
+    const STORAGE_KEY = "pseq_active_cycle_v2";
+    const TOKEN_KEY = "pseq_tokens_v2";
 
     const executionBlueprint = [
       {
@@ -1007,6 +1059,10 @@
     const submissionTitle = document.getElementById("submissionTitle");
     const cancelSubmission = document.getElementById("cancelSubmission");
 
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
     function saveCycle() {
       cycle.tokens_issued = cycle.executions.filter(e => e.token_issued).length;
       cycle.progression_status = cycle.tokens_issued >= cycle.token_threshold ? "eligible" : "locked";
@@ -1050,10 +1106,6 @@
 
       const chip = document.getElementById("progressionChip");
       chip.textContent = cycle.progression_status === "eligible" ? "Progression Eligible" : "Progression Locked";
-    }
-
-    function capitalize(str) {
-      return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
     function statusBadge(status) {
@@ -1148,7 +1200,6 @@
 
       submissionPanel.classList.remove("hidden");
       submissionPanel.scrollIntoView({ behavior: "smooth", block: "start" });
-
       renderExecutions();
     }
 
