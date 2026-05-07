@@ -3,372 +3,285 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PBS — Privacy Policy</title>
+
+  <meta name="openai_rpe_id" content="OPENAI-RPE-PBS-MASTER-GATE-PQS-LAUNCH-V1" />
+  <meta name="super_command_id" content="SCMD-PBS-MASTER-GATE-PQS-LAUNCH-APPROVED-001" />
+  <meta name="artifact" content="policies/terms.html" />
+
+  <title>Terms of Use | Phoenix Business System</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
   <style>
     :root{
       --bg:#050505;
-      --panel:#0d0f13;
-      --panel-2:#10141a;
-      --line:rgba(201,162,39,.22);
-      --line-soft:rgba(255,255,255,.08);
+      --panel:rgba(13,15,19,0.64);
       --text:#f3f4f6;
-      --muted:#9aa4b2;
+      --muted:#a8afb8;
+      --muted-2:#7f8791;
       --gold:#c9a227;
-      --gold-soft:rgba(201,162,39,.12);
-      --max:1120px;
-      --radius:20px;
-      --shadow:0 0 0 1px rgba(201,162,39,.10), 0 18px 60px rgba(0,0,0,.45);
+      --line:rgba(255,255,255,0.10);
+      --blue-glow:rgba(49,95,188,0.16);
     }
 
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
-    body{
-      margin:0;
-      font-family:"Inter", sans-serif;
+    *{box-sizing:border-box;margin:0;padding:0;}
+
+    html,body{
+      width:100%;
+      min-height:100%;
+      background:var(--bg);
       color:var(--text);
+      font-family:"Inter",Arial,sans-serif;
+    }
+
+    body{
       background:
-        radial-gradient(circle at top, rgba(201,162,39,.06), transparent 26%),
-        linear-gradient(180deg, #07080b 0%, #050505 100%);
+        radial-gradient(circle at 50% 18%, rgba(201,162,39,0.08) 0%, rgba(201,162,39,0.02) 18%, rgba(0,0,0,0) 44%),
+        radial-gradient(circle at 50% 58%, var(--blue-glow) 0%, rgba(49,95,188,0.05) 24%, rgba(0,0,0,0) 58%),
+        linear-gradient(180deg,#090909 0%,#060606 100%);
     }
 
-    a{color:inherit;text-decoration:none}
-    .shell{width:min(calc(100% - 32px), var(--max));margin:0 auto}
-
-    .topbar{
-      position:sticky;
-      top:0;
-      z-index:40;
-      background:rgba(6,7,10,.84);
-      backdrop-filter:blur(10px);
-      border-bottom:1px solid var(--line-soft);
+    .page{
+      min-height:100vh;
+      padding:70px 20px 42px;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.018) 0, rgba(255,255,255,0.018) 1px, transparent 1px, transparent 100%),
+        linear-gradient(180deg, rgba(255,255,255,0.018) 0, rgba(255,255,255,0.018) 1px, transparent 1px, transparent 100%);
+      background-size:120px 120px;
     }
 
-    .topbar-inner{
-      width:min(calc(100% - 32px), var(--max));
+    .shell{
+      width:min(960px,94vw);
       margin:0 auto;
-      min-height:76px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:16px;
-      flex-wrap:wrap;
     }
 
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:14px;
+    .top{
+      text-align:center;
+      margin-bottom:34px;
     }
 
-    .brand img{
-      width:42px;
-      height:42px;
-      object-fit:contain;
-      flex:0 0 auto;
-    }
-
-    .eyebrow{
-      font-size:.74rem;
-      letter-spacing:.22em;
+    .kicker{
+      font-family:"Cinzel",serif;
+      font-size:12px;
+      letter-spacing:0.32em;
       text-transform:uppercase;
-      color:var(--muted);
-    }
-
-    .brand-title{
-      font-family:"Cinzel", serif;
-      font-size:1rem;
-      line-height:1.2;
-      letter-spacing:.05em;
-    }
-
-    .nav{
-      display:flex;
-      align-items:center;
-      gap:14px;
-      flex-wrap:wrap;
-      color:var(--muted);
-      font-size:.94rem;
-    }
-
-    .nav a:hover{color:var(--text)}
-
-    .hero{
-      padding:48px 0 22px;
-    }
-
-    .hero-card{
-      background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
-      border:1px solid var(--line-soft);
-      box-shadow:var(--shadow);
-      border-radius:var(--radius);
-      padding:34px;
-      position:relative;
-      overflow:hidden;
-    }
-
-    .hero-card::before{
-      content:"";
-      position:absolute;
-      inset:0;
-      background:
-        linear-gradient(90deg, rgba(201,162,39,.08), transparent 28%),
-        radial-gradient(circle at top right, rgba(201,162,39,.05), transparent 18%);
-      pointer-events:none;
+      color:#cfd4da;
+      opacity:0.84;
+      margin-bottom:18px;
     }
 
     h1{
-      margin:10px 0 14px;
-      font-family:"Cinzel", serif;
-      font-size:clamp(2rem, 5vw, 3.6rem);
-      line-height:1.06;
+      font-family:"Cinzel",serif;
+      font-size:clamp(32px,4vw,52px);
+      letter-spacing:0.06em;
+      text-transform:uppercase;
+      font-weight:600;
+      background:linear-gradient(180deg,#ffffff 0%,#eef2f6 28%,#cfd6dd 48%,#f5f7fa 68%,#bfc6cd 100%);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      margin-bottom:14px;
     }
 
-    .hero-copy{
-      max-width:860px;
-      color:#d5dce6;
-      font-size:1.05rem;
-      line-height:1.8;
-      margin:0;
+    .sub{
+      color:var(--muted);
+      line-height:1.65;
+      font-size:15px;
+      max-width:760px;
+      margin:0 auto;
     }
 
-    .hero-note{
-      margin-top:22px;
-      padding:14px 16px;
+    .panel{
       border:1px solid var(--line);
-      background:var(--gold-soft);
-      border-radius:14px;
-      color:#f3e1a0;
-      line-height:1.7;
-      font-size:.95rem;
+      background:var(--panel);
+      padding:34px;
+      backdrop-filter:blur(4px);
     }
 
-    .content{
-      padding:8px 0 44px;
+    .updated{
+      color:var(--muted-2);
+      text-transform:uppercase;
+      letter-spacing:0.14em;
+      font-size:11px;
+      margin-bottom:24px;
+      font-weight:700;
     }
 
-    .stack{
-      display:flex;
-      flex-direction:column;
-      gap:18px;
+    h2{
+      font-family:"Cinzel",serif;
+      font-size:22px;
+      letter-spacing:0.06em;
+      text-transform:uppercase;
+      margin:30px 0 12px;
+      color:var(--text);
     }
 
-    .section{
-      background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01));
-      border:1px solid var(--line-soft);
-      box-shadow:var(--shadow);
-      border-radius:18px;
-      padding:24px;
+    h2:first-of-type{
+      margin-top:0;
     }
 
-    .section h2{
-      margin:8px 0 14px;
-      font-family:"Cinzel", serif;
-      font-size:1.55rem;
-      line-height:1.15;
+    p, li{
+      color:var(--muted);
+      line-height:1.76;
+      font-size:15px;
     }
 
-    .section p{
-      margin:0 0 14px;
-      color:#d7dee8;
-      line-height:1.82;
+    ul{
+      padding-left:22px;
+      margin:10px 0 0;
     }
 
-    .section p:last-child{margin-bottom:0}
-
-    .section ul{
-      margin:0;
-      padding-left:20px;
-      color:#d7dee8;
-      line-height:1.82;
+    strong{
+      color:var(--text);
     }
 
-    .section li + li{
-      margin-top:8px;
-    }
-
-    .callout{
+    .notice{
       border-left:3px solid var(--gold);
       padding-left:14px;
-      color:#f0f4f8;
+      margin:22px 0;
+      color:var(--muted);
+      line-height:1.75;
     }
 
     .footer{
-      padding:0 0 40px;
-      color:var(--muted);
+      margin-top:22px;
+      text-align:center;
+      color:#7b828c;
+      font-size:11px;
     }
 
-    .footer-box{
-      border:1px solid var(--line-soft);
-      border-radius:16px;
-      padding:18px 20px;
-      display:flex;
-      justify-content:space-between;
-      gap:14px;
-      flex-wrap:wrap;
-      background:rgba(255,255,255,.02);
+    .footer a{
+      color:#9ba3ad;
+      text-decoration:none;
+      margin:0 8px;
     }
 
-    @media (max-width: 720px){
-      .hero-card, .section{padding:20px}
-      .topbar-inner{align-items:flex-start}
-      h1{font-size:clamp(1.8rem, 9vw, 2.8rem)}
+    .footer a:hover{
+      color:#cfd4da;
+    }
+
+    @media(max-width:700px){
+      .page{padding-top:44px;}
+      .panel{padding:24px 18px;}
+      h1{font-size:30px;}
     }
   </style>
 </head>
+
 <body>
-  <header class="topbar">
-    <div class="topbar-inner">
-      <div class="brand">
-        <img src="./logo.png" alt="Phoenix Business System logo">
-        <div>
-          <div class="eyebrow">Phoenix Business System</div>
-          <div class="brand-title">Official Privacy Policy</div>
-        </div>
-      </div>
-
-      <nav class="nav">
-        <a href="./index.html">Landing</a>
-        <a href="./dashboard.html">Execution Dashboard</a>
-        <a href="./terms.html">Terms</a>
-      </nav>
-    </div>
-  </header>
-
-  <section class="hero">
+  <main class="page">
     <div class="shell">
-      <div class="hero-card">
-        <div class="eyebrow">PBS Legal Policy</div>
-        <h1>Privacy Policy</h1>
-        <p class="hero-copy">
-          This Privacy Policy explains how Phoenix Business System (“PBS”), operated through Rising Phoenix Enterprises, collects, uses, stores, and protects information submitted through PBS surfaces, pages, forms, assessments, execution layers, and related service pathways.
+      <header class="top">
+        <div class="kicker">Phoenix Business System</div>
+        <h1>Terms of Use</h1>
+        <p class="sub">
+          These Terms govern access to and use of Phoenix QuickScore, Phoenix Business Readiness Snapshot, and related Phoenix Business System surfaces.
         </p>
-        <div class="hero-note">
-          By using PBS, you acknowledge this policy and consent to the handling of information as described here.
+      </header>
+
+      <section class="panel">
+        <div class="updated">Effective Date: May 7, 2026</div>
+
+        <h2>1. Acceptance of Terms</h2>
+        <p>
+          By accessing or using Phoenix Business System services, including Phoenix QuickScore (“PQS”), Phoenix Business Readiness Snapshot (“PBRS”), and related pages, reports, forms, diagnostics, or outputs, you agree to these Terms of Use. If you do not agree, do not use the services.
+        </p>
+
+        <h2>2. Service Description</h2>
+        <p>
+          Phoenix Business System provides informational business readiness tools designed to help users understand possible operational, structural, and execution-related conditions. PQS is a free initial readiness signal. PBRS is a deeper paid diagnostic layer. Additional products, including builder, correction, sequence, or execution services, may be offered separately.
+        </p>
+
+        <h2>3. Informational Use Only</h2>
+        <p>
+          Outputs generated by Phoenix Business System are informational and diagnostic in nature. They are not guarantees, certifications, underwriting decisions, investment recommendations, legal opinions, tax advice, accounting advice, financial planning advice, or professional consulting determinations.
+        </p>
+
+        <div class="notice">
+          You remain responsible for all business, legal, financial, tax, operational, and strategic decisions made after receiving any Phoenix Business System output.
         </div>
-      </div>
-    </div>
-  </section>
 
-  <main class="content">
-    <div class="shell">
-      <div class="stack">
+        <h2>4. No Legal, Financial, Tax, or Professional Advice</h2>
+        <p>
+          Rising Phoenix Enterprises does not provide legal, tax, accounting, underwriting, investment, lending, insurance, or regulated financial advice through PQS, PBRS, or related tools. You should consult qualified professionals before making decisions that require licensed or regulated advice.
+        </p>
 
-        <section class="section">
-          <div class="eyebrow">Information Collection</div>
-          <h2>1. Information We May Collect</h2>
-          <p>Depending on the PBS surface used, we may collect information you choose to provide, including:</p>
-          <ul>
-            <li>name, email address, phone number, and other contact details,</li>
-            <li>business information, operational details, responses, and intake data,</li>
-            <li>uploaded materials, summaries, declarations, or execution-related submissions,</li>
-            <li>billing and transaction-related information processed through approved payment providers,</li>
-            <li>communications or support-related information you voluntarily provide.</li>
-          </ul>
-        </section>
+        <h2>5. No Guarantee of Results</h2>
+        <p>
+          Phoenix Business System does not guarantee revenue growth, funding approval, business credit approval, operational improvement, investment results, legal compliance, risk reduction, or any specific commercial outcome. Any score, tier, signal, recommendation, or pathway should be understood as a directional assessment based on available intake information.
+        </p>
 
-        <section class="section">
-          <div class="eyebrow">Use of Information</div>
-          <h2>2. How Information Is Used</h2>
-          <p>We may use submitted information to:</p>
-          <ul>
-            <li>deliver PBS products, pathways, structured outputs, and service access,</li>
-            <li>administer user progression, execution acknowledgment, or governed service states,</li>
-            <li>process transactions and maintain service continuity,</li>
-            <li>respond to inquiries, support requests, or operational contact needs,</li>
-            <li>improve clarity, continuity, administration, and quality of PBS services.</li>
-          </ul>
-        </section>
+        <h2>6. User Information and Accuracy</h2>
+        <p>
+          You agree to provide accurate, current, and complete information when submitting intake forms or diagnostic data. The usefulness of any output depends on the accuracy and completeness of the information provided. Rising Phoenix Enterprises is not responsible for inaccurate, incomplete, misleading, or outdated information submitted by users.
+        </p>
 
-        <section class="section">
-          <div class="eyebrow">Data Position</div>
-          <h2>3. Limited Use Principle</h2>
-          <p class="callout">
-            We collect and use information primarily for service delivery, structured PBS administration, transaction continuity, and related operational purposes.
-          </p>
-          <p>
-            We do not state that user information is sold as a business practice. Data use is directed toward service functionality, service administration, lawful business operation, and continuity of the PBS experience.
-          </p>
-        </section>
+        <h2>7. Payment Terms</h2>
+        <p>
+          PQS may be offered free of charge. PBRS and other advanced services may require payment through a third-party payment processor such as Stripe. Prices, availability, and included deliverables may change over time. Payment must be completed before access to paid deliverables unless otherwise stated.
+        </p>
 
-        <section class="section">
-          <div class="eyebrow">Payments</div>
-          <h2>4. Payment Information</h2>
-          <p>
-            Payments may be processed through approved third-party payment processors. We do not necessarily store full payment card details directly on PBS pages. Payment-related information may be handled according to the policies and security practices of the processor used.
-          </p>
-        </section>
+        <h2>8. Refund Policy</h2>
+        <p>
+          Due to the diagnostic and digital nature of PBRS and related outputs, payments may be non-refundable once a diagnostic process has begun, a report has been generated, or a digital deliverable has been made available. Any refund exceptions are at the sole discretion of Rising Phoenix Enterprises.
+        </p>
 
-        <section class="section">
-          <div class="eyebrow">Uploads and Submissions</div>
-          <h2>5. Uploaded Materials and Execution Submissions</h2>
-          <p>
-            If a PBS surface allows documents, summaries, declarations, screenshots, or other client-submitted materials, those materials may be used to support service delivery, execution acknowledgment, system administration, or related continuity functions within the applicable PBS pathway.
-          </p>
-          <p>
-            Users remain responsible for ensuring that submitted materials are lawful, accurate, appropriate, and authorized for submission.
-          </p>
-        </section>
+        <h2>9. Intellectual Property</h2>
+        <p>
+          Phoenix Business System, Phoenix QuickScore, Phoenix Business Readiness Snapshot, system designs, page designs, copy, scoring logic, diagnostic structures, reports, frameworks, workflows, and related materials are owned by Rising Phoenix Enterprises or its licensors. You may not copy, reproduce, resell, reverse engineer, distribute, or commercially exploit these materials without written permission.
+        </p>
 
-        <section class="section">
-          <div class="eyebrow">Retention</div>
-          <h2>6. Data Retention</h2>
-          <p>
-            We may retain submitted information, service records, transaction records, acknowledgment records, and related materials for as long as reasonably necessary to operate PBS, maintain continuity, comply with legal obligations, resolve disputes, protect system integrity, or preserve service history.
-          </p>
-        </section>
+        <h2>10. Permitted Use</h2>
+        <p>
+          You may use Phoenix Business System outputs for your own internal business review and decision support. You may not use the services to interfere with system operations, scrape content, attempt unauthorized access, submit malicious code, misrepresent identity, or violate applicable law.
+        </p>
 
-        <section class="section">
-          <div class="eyebrow">Protection</div>
-          <h2>7. Data Security</h2>
-          <p>
-            We take reasonable measures intended to protect information from unauthorized access, misuse, alteration, or disclosure. However, no internet-based system, transmission method, or digital storage environment can be guaranteed to be completely secure.
-          </p>
-        </section>
+        <h2>11. Third-Party Services</h2>
+        <p>
+          Phoenix Business System may link to or integrate with third-party services, including payment processors, hosting providers, analytics tools, or automation platforms. Rising Phoenix Enterprises is not responsible for third-party platforms, policies, outages, security practices, or processing decisions.
+        </p>
 
-        <section class="section">
-          <div class="eyebrow">Third Parties</div>
-          <h2>8. Third-Party Services</h2>
-          <p>
-            PBS may rely on third-party services for hosting, communication, analytics, payment processing, delivery support, or related operations. Where such services are used, information may be processed through those providers to support PBS functionality and lawful business operations.
-          </p>
-        </section>
+        <h2>12. Limitation of Liability</h2>
+        <p>
+          To the fullest extent permitted by law, Rising Phoenix Enterprises shall not be liable for indirect, incidental, consequential, special, exemplary, or punitive damages, including lost profits, lost revenue, loss of business opportunity, data loss, or business interruption arising from use of the services.
+        </p>
 
-        <section class="section">
-          <div class="eyebrow">User Choice</div>
-          <h2>9. Your Use of PBS</h2>
-          <p>
-            You may choose not to provide certain information, but doing so may limit access to specific PBS surfaces, outputs, pathways, purchases, or governed service functions.
-          </p>
-        </section>
+        <h2>13. Disclaimer of Warranties</h2>
+        <p>
+          The services are provided “as is” and “as available.” Rising Phoenix Enterprises makes no warranties that the services will be uninterrupted, error-free, fully secure, or suitable for any specific purpose.
+        </p>
 
-        <section class="section">
-          <div class="eyebrow">Policy Updates</div>
-          <h2>10. Updates to This Privacy Policy</h2>
-          <p>
-            This Privacy Policy may be revised from time to time to reflect operational, legal, structural, or service changes. Continued use of PBS after an update constitutes acceptance of the revised policy as posted on this page.
-          </p>
-        </section>
+        <h2>14. Changes to Terms</h2>
+        <p>
+          Rising Phoenix Enterprises may update these Terms from time to time. Continued use of the services after updates are posted constitutes acceptance of the revised Terms.
+        </p>
 
-      </div>
+        <h2>15. Governing Law</h2>
+        <p>
+          These Terms are governed by the laws of the State of Florida, without regard to conflict of law principles, unless a different governing law is required by applicable law.
+        </p>
+
+        <h2>16. Contact</h2>
+       <p>
+  <strong>Rising Phoenix Enterprises</strong><br>
+
+  Email: contact@risingphoenixhq.com<br><br>
+
+  <strong>Business Entity:</strong><br>
+  Rising Phoenix Enterprises HoldingCo, LLC<br><br>
+
+  <strong>Jurisdiction:</strong><br>
+  Wyoming, United States
+</p>
+      </section>
+
+      <footer class="footer">
+        © Rising Phoenix Enterprises
+        <a href="/">Home</a>
+        <a href="/privacy.html">Privacy</a>
+      </footer>
     </div>
   </main>
-
-  <footer class="footer">
-    <div class="shell">
-      <div class="footer-box">
-        <div>© Rising Phoenix Enterprises · Phoenix Business System</div>
-        <div class="nav">
-          <a href="./index.html">Landing</a>
-          <a href="./dashboard.html">Execution Dashboard</a>
-          <a href="./terms.html">Terms of Service</a>
-        </div>
-      </div>
-    </div>
-  </footer>
 </body>
 </html> 
